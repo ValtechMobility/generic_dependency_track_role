@@ -1,0 +1,53 @@
+---
+- name: Ensure user exists
+  user:
+    name: "{{ generic_dtrack_username }}"
+    uid: "{{ generic_dtrack_uid }}"
+    create_home: false
+    shell: /sbin/nologin
+    state: present
+
+- name: Ensure group exists
+  group:
+    name: "{{ generic_dtrack_groupname }}"
+    gid: "{{ generic_dtrack_gid }}"
+    state: present
+
+- name: Create data path
+  file:
+    path: "{{ generic_dtrack_data_path }}"
+    state: directory
+    recurse: true
+    owner: "{{ generic_dtrack_username }}"
+    group: "{{ generic_dtrack_groupname }}"
+
+- name: Create subfolders
+  file:
+    path: "{{ generic_dtrack_data_path }}/{{ item }}"
+    state: directory
+    recurse: true
+    owner: "{{ generic_dtrack_username }}"
+    group: "{{ generic_dtrack_groupname }}"
+  loop:
+    - apiserver
+    - frontend
+
+- name: Deploy apiserver container
+  docker_container:
+    name: "{{ generic_dtrack_apiserver_container_name }}"
+    image: "{{ generic_dtrack_apiserver_container_image }}"
+    user: "{{ generic_dtrack_uid }}:{{ generic_dtrack_gid }}"
+    published_ports: "{{ generic_dtrack_apiserver_container_ports }}"
+    env: "{{ generic_dtrack_apiserver_container_env_vars }}"
+    volumes: "{{ generic_dtrack_apiserver_container_volumes }}"
+    links: "{{ generic_dtrack_apiserver_container_links }}"
+    state: "{{ generic_dtrack_apiserver_container_state }}"
+    recreate: "{{ generic_dtrack_apiserver_container_recreate }}"
+    auto_remove: "{{ generic_dtrack_apiserver_container_auto_remove }}"
+    cpu_quota: "{{ generic_dtrack_apiserver_container_cpu_quota }}"
+    entrypoint: "{{ generic_dtrack_apiserver_container_entrypoint }}"
+    memory: "{{ generic_dtrack_apiserver_container_memory }}"
+    network_mode: "{{ generic_dtrack_apiserver_container_network_mode }}"
+    networks: "{{ generic_dtrack_apiserver_container_networks }}"
+    restart: "{{ generic_dtrack_apiserver_container_restart }}"
+    restart_policy: "{{ generic_dtrack_apiserver_container_restart_policy }}"

@@ -1,0 +1,25 @@
+generic_dtrack_data_path: /opt/dependency-track
+generic_dtrack_username: dtrack
+generic_dtrack_uid: 2001
+generic_dtrack_groupname: dtrack
+generic_dtrack_gid: 2001
+
+generic_dtrack_apiserver_container_count: 1
+generic_dtrack_apiserver_container_name: dtrack-apiserver
+generic_dtrack_apiserver_container_image: dependencytrack/apiserver
+generic_dtrack_apiserver_container_ports:
+  - "8081:8080"
+generic_dtrack_apiserver_container_volumes:
+  - "{{ generic_dtrack_data_path }}/apiserver/:/data"
+generic_dtrack_apiserver_container_links:
+
+generic_dtrack_apiserver_container_state: started
+generic_dtrack_apiserver_container_recreate: yes
+generic_dtrack_apiserver_container_auto_remove: no
+generic_dtrack_apiserver_container_cpu_quota:
+generic_dtrack_apiserver_container_entrypoint:
+generic_dtrack_apiserver_container_memory:
+generic_dtrack_apiserver_container_network_mode:
+generic_dtrack_apiserver_container_networks:
+generic_dtrack_apiserver_container_restart:
+generic_dtrack_apiserver_container_restart_policy: unless-stopped
