@@ -1,0 +1,20 @@
+galaxy_info:
+  role_name: generic_dependency_track_role
+  description: A role to install Dependency Track
+  author: Valtech Mobility
+  company: Valtech Mobility
+
+  issue_tracker_url: https://github.com/ValtechMobility/generic_dependency_track_role/issues
+
+  min_ansible_version: 2.9
+
+  platforms:
+  - name: Ubuntu
+    versions:
+    - ">= 18.04"
+
+  galaxy_tags:
+  - dependencytrack
+  - ubuntu
+
+dependencies: []

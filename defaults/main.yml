@@ -1,25 +1,74 @@
-generic_dtrack_data_path: /opt/dependency-track
-generic_dtrack_username: dtrack
-generic_dtrack_uid: 2001
-generic_dtrack_groupname: dtrack
-generic_dtrack_gid: 2001
+generic_dtrack_base_path: /opt/dependency-track
+generic_dtrack_additional_path:
+  - "{{ generic_dtrack_base_path }}/apiserver"
+  - "{{ generic_dtrack_base_path }}/frontend"
+generic_dtrack_uid: 1000
+generic_dtrack_gid: 1000
+
+generic_dtrack_allow_firewall_ports:
+  - 8080
+
+# API SERVER
 
 generic_dtrack_apiserver_container_count: 1
 generic_dtrack_apiserver_container_name: dtrack-apiserver
-generic_dtrack_apiserver_container_image: dependencytrack/apiserver
+generic_dtrack_apiserver_container_image: dependencytrack/apiserver:4.4.1
 generic_dtrack_apiserver_container_ports:
   - "8081:8080"
 generic_dtrack_apiserver_container_volumes:
-  - "{{ generic_dtrack_data_path }}/apiserver/:/data"
-generic_dtrack_apiserver_container_links:
+  - "{{ generic_dtrack_base_path }}/apiserver:/data"
+generic_dtrack_apiserver_container_links: []
+generic_dtrack_apiserver_container_env:
+  ALPINE_DATA_DIRECTORY: "/data/.dependency-track"
+  ALPINE_DATABASE_URL: "jdbc:h2:/data/.dependency-track/db"
+
+  ALPINE_LDAP_ENABLED: "true"
+  ALPINE_LDAP_SERVER_URL: "{{ generic_dtrack_ldap_server_url }}"
+  ALPINE_LDAP_BASEDN: "{{ generic_dtrack_ldap_basedn }}"
+  ALPINE_LDAP_SECURITY_AUTH: "simple"
+  ALPINE_LDAP_BIND_USERNAME: "{{ generic_dtrack_ldap_username }}"
+  ALPINE_LDAP_BIND_PASSWORD: "{{ generic_dtrack_ldap_password }}"
+  ALPINE_LDAP_AUTH_USERNAME_FORMAT: "%s"
+  ALPINE_LDAP_ATTRIBUTE_NAME: "sAMAccountName"
+  ALPINE_LDAP_ATTRIBUTE_MAIL: "email"
+  ALPINE_LDAP_GROUPS_FILTER: "(objectClass=group)"
+  ALPINE_LDAP_USER_GROUPS_FILTER: "(member:1.2.840.113556.1.4.1941:={USER_DN})"
+  ALPINE_LDAP_GROUPS_SEARCH_FILTER: "(&(objectClass=group)(cn=*{SEARCH_TERM}*))"
+  ALPINE_LDAP_USERS_SEARCH_FILTER: "(&(objectClass=user)(cn=*{SEARCH_TERM}*))"
+  ALPINE_LDAP_USER_PROVISIONING: "true"
+  ALPINE_LDAP_TEAM_SYNCHRONIZATION: "true"
 
 generic_dtrack_apiserver_container_state: started
-generic_dtrack_apiserver_container_recreate: yes
+generic_dtrack_apiserver_container_recreate: no
 generic_dtrack_apiserver_container_auto_remove: no
-generic_dtrack_apiserver_container_cpu_quota:
-generic_dtrack_apiserver_container_entrypoint:
-generic_dtrack_apiserver_container_memory:
-generic_dtrack_apiserver_container_network_mode:
-generic_dtrack_apiserver_container_networks:
-generic_dtrack_apiserver_container_restart:
+generic_dtrack_apiserver_container_cpu_quota: 0
+generic_dtrack_apiserver_container_memory: 0
+generic_dtrack_apiserver_container_memory_reservation: 4G
+generic_dtrack_apiserver_container_memory_swap: 0
+generic_dtrack_apiserver_container_network_mode: default
+generic_dtrack_apiserver_container_networks: []
+generic_dtrack_apiserver_container_restart: no
 generic_dtrack_apiserver_container_restart_policy: unless-stopped
+
+# FRONTEND
+generic_dtrack_frontend_container_count: 1
+generic_dtrack_frontend_container_name: dtrack-frontend
+generic_dtrack_frontend_container_image: dependencytrack/frontend:4.4.0
+generic_dtrack_frontend_container_ports:
+  - "8080:8080"
+generic_dtrack_frontend_container_volumes: []
+generic_dtrack_frontend_container_links: []
+generic_dtrack_frontend_container_env:
+  API_BASE_URL: "http://{{ inventory_hostname }}:8081"
+
+generic_dtrack_frontend_container_state: started
+generic_dtrack_frontend_container_recreate: no
+generic_dtrack_frontend_container_auto_remove: no
+generic_dtrack_frontend_container_cpu_quota: 0
+generic_dtrack_frontend_container_memory: 0
+generic_dtrack_frontend_container_memory_reservation: 0
+generic_dtrack_frontend_container_memory_swap: 0
+generic_dtrack_frontend_container_network_mode: default
+generic_dtrack_frontend_container_networks: []
+generic_dtrack_frontend_container_restart: no
+generic_dtrack_frontend_container_restart_policy: unless-stopped
